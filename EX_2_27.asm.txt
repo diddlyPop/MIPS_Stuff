@@ -1,0 +1,70 @@
+#####################################################################
+# CPSC 440-03 13652 Spring 2019
+#####################################################################
+# EX_2_27
+# For the following C statement, what is the corresponding MIPS
+# assembly code? Display the result and terminate the program.
+#
+#  for( i=0; i< a; i++ ) {
+#    for( j=0; j < b; j++) {
+#      d[4*j] = i + j; }
+#    };
+    .data
+
+a:  .word 17
+b:  .word 13
+
+    .globl main
+
+    .text
+
+main:
+    
+    lw $t2, a
+    lw $t3, b
+    
+    # Allocate space for j*4 integers on the heap
+    sll $a0, $t3, 4		#multiply b by 4 and another 4 for bytes
+    li $v0, 9                  # syscall 9
+    syscall
+    move $s0, $v0              # Move the rv to someplace 'safe'
+    
+    addi $t0, $zero, 0
+
+iloop: 
+
+    blt $t2, $t0, exit
+    addi $t0, $t0, 1 		#increment i
+    
+jloop: 
+    
+    addi $t1, $zero, 0
+            
+jcontinue:
+    
+    sll $t4, $t1, 4			#calc 4*j in bytes
+    add $t5, $t0, $t1  			#calc i+j
+    add $t6, $s0, $t4
+    sw $t5, ($t6)
+    
+    add $t1, $t1, 1
+    blt $t1, $t3, jcontinue
+    
+    j iloop
+    
+icontinue:
+
+    addi $t0, $t0, 1
+    blt $t0, $t2, iloop
+    
+    j exit
+    
+exit:
+
+    move $a0, $t6		# this blocks prints value of $t6
+    li $v0, 1
+    syscall
+    
+    li $v0, 10                 # terminate the program
+    syscall
+     

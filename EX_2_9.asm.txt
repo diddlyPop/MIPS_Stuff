@@ -1,0 +1,47 @@
+#####################################################################
+# CPSC 440-03 13652 Spring 2019
+#####################################################################
+# EX_2_9
+# For the following C statement, what is the corresponding MIPS
+# assembly code? Display the result and terminate the program.
+# b[j] = a[i] + a[j];
+    .data
+a:  .word 0xDE, 0xAD, 0xBE, 0xEF, 0xDE, 0xAD, 0xC0, 0xDE
+i:  .word 3
+j:  .word 4
+
+    .globl main
+
+    .text
+
+main:
+
+    # load i and j into $t0 and $t1
+    lw $t0, i($zero)
+    lw $t1, j($zero)
+
+    # Allocate space for j integers on the heap
+    sll $t2, $t1, 2            # j shifted left twice
+    sll $t3, $t0, 2	       # i shifted left twice
+    
+    move $a0, $t2		
+    li $v0, 9                   # syscall 9
+    syscall
+    move $s0, $v0               # Move address to someplace 'safe'
+    
+    lw $t4, a($t3)		# t4 = a[i]
+    lw $t5, a($t2)		# t4 = a[j]
+
+    add $t6, $t4, $t5		# value of a[i] + a[j]
+    
+    move $a0, $t6		# this blocks prints value of $t6
+    li $v0, 1
+    syscall
+    
+    add $s1, $s0, $t2	        # s1 is now b[j], heap start + offset
+    
+    sw $t6, ($s1)		# store value into b[j]
+
+    li $v0, 10                  # terminate the program
+    syscall
+  

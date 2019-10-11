@@ -1,0 +1,35 @@
+#####################################################################
+# CPSC 440-03 13652 Spring 2019
+#####################################################################
+# PE_2_01
+# For the following C statement, what is the corresponding MIPS
+# assembly code? Display the result and terminate the program.
+# f = g + ( h - 5 );
+    .data
+f:  .word 0xDE
+g:  .word 222
+h:  .byte 13
+
+    .globl main
+
+    .text
+
+main:
+
+    lw $t0, g	
+    lw $t1, h
+    
+    sub $t2, $t1, 5		# subtract h - 5
+    add $t3, $t2, $t0		# add (h-5) and g
+    
+    sw $t3, f
+    
+    move $a0, $t3		# this blocks prints value of t3
+    li $v0, 1
+    syscall
+        
+
+    li $v0, 10                 # terminate the program
+    syscall
+    
+    
